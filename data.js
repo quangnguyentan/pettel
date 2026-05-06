@@ -1562,12 +1562,12 @@ const districtNames = [
 
 // Price ranges for distribution (in VND)
 const priceRanges = [
-  {min: 50000, max: 99000}, // 0-100k range
-  {min: 100000, max: 199000}, // 100-200k range
-  {min: 200000, max: 299000}, // 200-300k range
-  {min: 300000, max: 399000}, // 300-400k range
-  {min: 400000, max: 499000}, // 400-500k range
-  {min: 500000, max: 700000}, // 500k+ range
+  { min: 50000, max: 99000 }, // 0-100k range
+  { min: 100000, max: 199000 }, // 100-200k range
+  { min: 200000, max: 299000 }, // 200-300k range
+  { min: 300000, max: 399000 }, // 300-400k range
+  { min: 400000, max: 499000 }, // 400-500k range
+  { min: 500000, max: 700000 }, // 500k+ range
 ];
 
 // Add services, district, price, and update images for all sitters
@@ -1590,6 +1590,49 @@ sittersData.forEach((sitter, index) => {
   // Random price within the range
   sitter.price =
     Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+
+  // Assign trust level based on price
+  if (sitter.price < 100000) {
+    sitter.trustLevel = "new";
+    sitter.confidenceScore = Math.floor(Math.random() * 20) + 60; // 60-80
+    sitter.verifiedDetails = {
+      idCheck: false,
+      backgroundCheck: false,
+      hasCertificate: false,
+      verifiedReviewCount: 0,
+      liveUpdates: false,
+    };
+  } else if (sitter.price >= 100000 && sitter.price < 200000) {
+    sitter.trustLevel = "new"; // 100-200k also new member
+    sitter.confidenceScore = Math.floor(Math.random() * 20) + 60; // 60-80
+    sitter.verifiedDetails = {
+      idCheck: false,
+      backgroundCheck: false,
+      hasCertificate: false,
+      verifiedReviewCount: 0,
+      liveUpdates: false,
+    };
+  } else if (sitter.price >= 200000 && sitter.price < 400000) {
+    sitter.trustLevel = "verified"; // 200-400k is verified
+    sitter.confidenceScore = Math.floor(Math.random() * 15) + 80; // 80-95
+    sitter.verifiedDetails = {
+      idCheck: true,
+      backgroundCheck: true,
+      hasCertificate: false,
+      verifiedReviewCount: sitter.reviewCount || 50,
+      liveUpdates: false,
+    };
+  } else {
+    sitter.trustLevel = "pro"; // 400k+ is pro
+    sitter.confidenceScore = Math.floor(Math.random() * 10) + 90; // 90-100
+    sitter.verifiedDetails = {
+      idCheck: true,
+      backgroundCheck: true,
+      hasCertificate: true,
+      verifiedReviewCount: sitter.reviewCount || 100,
+      liveUpdates: true,
+    };
+  }
 
   // Update image from Pet sister folder
   sitter.image = petSisterImages[index % petSisterImages.length];

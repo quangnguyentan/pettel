@@ -15,7 +15,7 @@ let currentFilters = {
   trustLevel: [], // New: pro, verified, new
   priceRange: "all", // New: price filter
   district: "all", // New: district filter
-  services: ["trongtaigia", "guigam", "datdidao"], // Default active services
+  services: [], // No default filter - show all sitters
   searchQuery: "", // New: search query
 };
 
@@ -187,7 +187,7 @@ function updateDropdownCounts() {
     if (value === "all") {
       count = allSitters.length;
     } else {
-      const tempFilters = {...currentFilters, priceRange: value};
+      const tempFilters = { ...currentFilters, priceRange: value };
       count = allSitters.filter((sitter) =>
         matchesFilters(sitter, tempFilters),
       ).length;
@@ -209,7 +209,7 @@ function updateDropdownCounts() {
     if (value === "all") {
       count = allSitters.length;
     } else {
-      const tempFilters = {...currentFilters, district: value};
+      const tempFilters = { ...currentFilters, district: value };
       count = allSitters.filter((sitter) =>
         matchesFilters(sitter, tempFilters),
       ).length;
@@ -473,12 +473,12 @@ function setupServiceFilters() {
   const datDiDaoBtn = document.getElementById("filter-datdidao");
 
   const serviceButtons = [
-    {btn: trongTaiGiaBtn, service: "trongtaigia"},
-    {btn: guiGamBtn, service: "guigam"},
-    {btn: datDiDaoBtn, service: "datdidao"},
+    { btn: trongTaiGiaBtn, service: "trongtaigia" },
+    { btn: guiGamBtn, service: "guigam" },
+    { btn: datDiDaoBtn, service: "datdidao" },
   ];
 
-  serviceButtons.forEach(({btn, service}) => {
+  serviceButtons.forEach(({ btn, service }) => {
     if (btn) {
       btn.addEventListener("click", () => {
         btn.classList.toggle("filter-pill--active");
@@ -502,7 +502,7 @@ function setupServiceFilters() {
           "Active services:",
           currentFilters.services,
         );
-        applyFiltersAndRender();
+        applyFilters();
       });
     }
   });
