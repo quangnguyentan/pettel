@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chat - PETTEL">
+  <title>Chat | PETTEL</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <script src="data.js"></script>
+</head>
+<body>
+
+  <!-- Chat Header -->
+  <div class="chat-header" id="chat-header">
+    <a href="detail.html" class="chat-back-btn" id="back-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </a>
+    <div class="chat-header-info">
+      <div class="chat-avatar">
+        <img src="images/pet_hotel_building.png" alt="Sitter Avatar">
+      </div>
+      <div class="chat-header-text">
+        <div class="chat-sitter-name" id="chat-sitter-name">Cat Moon Hotel</div>
+        <div class="chat-online-status">
+          <span class="online-dot"></span> Đang online
+        </div>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="chat-action-btn" id="video-call-btn" title="Gọi video">
+        <i class="fa-solid fa-video"></i>
+      </button>
+      <button class="chat-action-btn" id="live-cam-btn" title="Xem cam trực tiếp" style="display: none;">
+        <i class="fa-solid fa-camera"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Messages -->
+  <div class="chat-container" id="chat-container">
+    <div class="chat-messages" id="chat-messages">
+      <!-- Messages will be added dynamically -->
+    </div>
+  </div>
+
+  <!-- Chat Input -->
+  <div class="chat-input-container">
+    <button class="chat-attach-btn" title="Đính kèm ảnh">
+      <i class="fa-solid fa-image"></i>
+    </button>
+    <input type="text" class="chat-input" placeholder="Nhắn tin..." id="chat-input">
+    <button class="chat-send-btn" id="chat-send-btn">
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+  </div>
+
+  <script>
+    // Load sitter data from URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function loadChatData() {
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      
+      if (typeof sittersData !== 'undefined') {
+        const sitter = sittersData.find(s => s.id === sitterId);
+        
+        if (sitter) {
+          document.getElementById('chat-sitter-name').textContent = sitter.name;
+          document.title = `Chat với ${sitter.name} | PETTEL`;
+          
+          // Show live cam button only if liveUpdates is true
+          if (sitter.verifiedDetails && sitter.verifiedDetails.liveUpdates) {
+            document.getElementById('live-cam-btn').style.display = 'block';
+          }
+          
+          // Map sitter ID to correct detail page
+          let detailPage = 'detail.html';
+          if (sitterId === 1) {
+            detailPage = 'detail-dotung.html';
+          } else if (sitterId === 2) {
+            detailPage = 'detail-minhnhat.html';
+          } else if (sitterId === 3) {
+            detailPage = 'detail.html';
+          } else if (sitterId === 51) {
+            detailPage = 'detail-baotram.html';
+          } else if (sitterId === 52) {
+            detailPage = 'detail-baotram-house.html';
+          }
+          
+          // Update back button
+          document.getElementById('back-btn').href = detailPage;
+        }
+      }
+    }
+
+    // Video call button
+    document.getElementById('video-call-btn').addEventListener('click', () => {
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      window.location.href = `videocall.html?id=${sitterId}`;
+    });
+
+    // Live cam button
+    document.getElementById('live-cam-btn').addEventListener('click', () => {
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      window.location.href = `livecam.html?id=${sitterId}`;
+    });
+
+    // Pet status responses with images
+    const petResponses = [
+      { text: 'miu đang chơi với em', image: 'images/miu đang chơi với em.jpg' },
+      { text: 'Miu đang chơi với chó em chị ạ', image: 'images/Miu đang chơi với chó em chị ạ.jpg' },
+      { text: 'miu đang đi dạo', image: 'images/miu đang đi dạo.jpg' },
+      { text: 'Miu đang chơi với mun', image: 'images/Miu đang chơi với mun.jpg' }
+    ];
+
+    // Send message with auto-reply
+    document.getElementById('chat-send-btn').addEventListener('click', () => {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      
+      if (message) {
+        const messagesContainer = document.getElementById('chat-messages');
+        const now = new Date();
+        const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        
+        // Add user message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message chat-message--owner';
+        messageDiv.innerHTML = `
+          <div class="message-content">
+            <div class="message-text">${message}</div>
+            <div class="message-time">${time}</div>
+          </div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        input.value = '';
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Auto-reply after 1-2 seconds with random pet status
+        setTimeout(() => {
+          const randomResponse = petResponses[Math.floor(Math.random() * petResponses.length)];
+          const replyTime = new Date();
+          const replyTimeStr = `${replyTime.getHours()}:${replyTime.getMinutes().toString().padStart(2, '0')}`;
+          
+          // Add photo message from sitter
+          const replyDiv = document.createElement('div');
+          replyDiv.className = 'chat-message chat-message--sitter';
+          replyDiv.innerHTML = `
+            <div class="message-content">
+              <div class="message-photo-card">
+                <img src="${randomResponse.image}" alt="${randomResponse.text}">
+                <div class="message-photo-caption">${randomResponse.text} · ${replyTimeStr}</div>
+              </div>
+            </div>
+          `;
+          
+          messagesContainer.appendChild(replyDiv);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+      }
+    });
+
+    // Enter key to send
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('chat-send-btn').click();
+      }
+    });
+
+    // Initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadChatData);
+    } else {
+      loadChatData();
+    }
+  </script>
+</body>
+</html>

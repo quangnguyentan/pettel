@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Video Call - PETTEL">
+  <title>Gọi video | PETTEL</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <script src="data.js"></script>
+</head>
+<body>
+
+  <div class="videocall-overlay">
+    
+    <!-- Calling/Ringing Screen -->
+    <div class="videocall-calling" id="videocall-calling">
+      <div class="videocall-calling-content">
+        <div class="videocall-calling-avatar">
+          <img src="images/hotel_interior.png" alt="Avatar" id="calling-avatar">
+          <div class="videocall-calling-pulse"></div>
+          <div class="videocall-calling-pulse"></div>
+          <div class="videocall-calling-pulse"></div>
+        </div>
+        <h2 id="calling-name">Cat Moon Hotel</h2>
+        <p class="videocall-calling-status">Đang kết nối...</p>
+        <div class="videocall-calling-icon">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connected Call Screen -->
+    <div class="videocall-container" id="videocall-container" style="display: none;">
+      
+      <!-- Remote feed (sitter's camera) -->
+      <div class="videocall-remote-feed">
+        <img src="images/hotel_interior.png" alt="Video feed" class="videocall-feed-image">
+        <div class="videocall-sitter-label" id="videocall-sitter-label">Cat Moon Hotel</div>
+      </div>
+
+      <!-- Self view PiP -->
+      <div class="videocall-self-view">
+        <video id="self-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+        <div class="videocall-self-placeholder" id="self-placeholder">Bạn</div>
+      </div>
+
+      <!-- Call timer -->
+      <div class="videocall-timer" id="videocall-timer">00:00</div>
+
+      <!-- Call controls -->
+      <div class="videocall-controls">
+        <button class="videocall-control-btn" id="toggle-mic-btn" title="Tắt mic">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <button class="videocall-control-btn" id="toggle-camera-btn" title="Tắt camera">
+          <i class="fa-solid fa-video"></i>
+        </button>
+        <button class="videocall-control-btn videocall-end-btn" id="end-call-btn" title="Kết thúc cuộc gọi">
+          <i class="fa-solid fa-phone-slash"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Load sitter data from URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    let callSeconds = 0;
+    let callTimer = null;
+    let micOn = true;
+    let cameraOn = true;
+    let localStream = null;
+    let isConnected = false;
+
+    // Audio context for connection tone
+    let audioContext = null;
+    let connectionTone = null;
+
+    // Play Messenger-style calling tone
+    function playConnectionTone() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Messenger-style melody: E5 -> C5 (up and down pattern)
+        const notes = [
+          { freq: 659.25, start: 0, duration: 0.15 },      // E5
+          { freq: 523.25, start: 0.18, duration: 0.15 },   // C5
+          { freq: 659.25, start: 1.2, duration: 0.15 },    // E5
+          { freq: 523.25, start: 1.38, duration: 0.15 },   // C5
+          { freq: 659.25, start: 2.4, duration: 0.15 },    // E5
+          { freq: 523.25, start: 2.58, duration: 0.15 },   // C5
+        ];
+        
+        notes.forEach(note => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.value = note.freq;
+          oscillator.type = 'sine';
+          
+          const startTime = audioContext.currentTime + note.start;
+          const endTime = startTime + note.duration;
+          
+          // Smooth envelope
+          gainNode.gain.setValueAtTime(0, startTime);
+          gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+          gainNode.gain.linearRampToValueAtTime(0.25, endTime - 0.02);
+          gainNode.gain.linearRampToValueAtTime(0, endTime);
+          
+          oscillator.start(startTime);
+          oscillator.stop(endTime);
+        });
+      } catch (error) {
+        console.log('Audio not supported');
+      }
+    }
+
+    // Play end call sound
+    function playEndCallSound() {
+      try {
+        const tempContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = tempContext.createOscillator();
+        const gainNode = tempContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(tempContext.destination);
+        
+        // Descending tone (disconnect sound)
+        oscillator.frequency.setValueAtTime(400, tempContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, tempContext.currentTime + 0.3);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, tempContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, tempContext.currentTime + 0.3);
+        
+        oscillator.start();
+        oscillator.stop(tempContext.currentTime + 0.3);
+        
+        setTimeout(() => {
+          tempContext.close();
+        }, 500);
+      } catch (error) {
+        console.log('Audio not supported');
+      }
+    }
+
+    function connectCall() {
+      isConnected = true;
+      document.getElementById('videocall-calling').style.display = 'none';
+      document.getElementById('videocall-container').style.display = 'block';
+      
+      // Start call timer
+      callTimer = setInterval(() => {
+        callSeconds++;
+        const minutes = Math.floor(callSeconds / 60).toString().padStart(2, '0');
+        const seconds = (callSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('videocall-timer').textContent = `${minutes}:${seconds}`;
+      }, 1000);
+    }
+
+    async function startWebcam() {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const videoElement = document.getElementById('self-video');
+        const placeholder = document.getElementById('self-placeholder');
+        videoElement.srcObject = localStream;
+        videoElement.style.display = 'block';
+        placeholder.style.display = 'none';
+      } catch (error) {
+        console.log('Không thể truy cập camera:', error);
+        // Keep placeholder if camera access fails
+      }
+    }
+
+    function loadVideoCallData() {
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      
+      if (typeof sittersData !== 'undefined') {
+        const sitter = sittersData.find(s => s.id === sitterId);
+        
+        if (sitter) {
+          document.getElementById('videocall-sitter-label').textContent = sitter.name;
+          document.getElementById('calling-name').textContent = sitter.name;
+          document.title = `Gọi video với ${sitter.name} | PETTEL`;
+        }
+      }
+
+      // Play ringing tone
+      playConnectionTone();
+
+      // Show calling screen for 3-4 seconds
+      setTimeout(() => {
+        connectCall();
+        startWebcam();
+      }, 3500);
+    }
+
+    // Toggle mic
+    document.getElementById('toggle-mic-btn').addEventListener('click', function() {
+      micOn = !micOn;
+      const icon = this.querySelector('i');
+      if (micOn) {
+        icon.className = 'fa-solid fa-microphone';
+        this.style.opacity = '1';
+        this.title = 'Tắt mic';
+        if (localStream) {
+          localStream.getAudioTracks().forEach(track => track.enabled = true);
+        }
+      } else {
+        icon.className = 'fa-solid fa-microphone-slash';
+        this.style.opacity = '0.7';
+        this.style.background = 'rgba(220, 38, 38, 0.9)';
+        this.title = 'Bật mic';
+        if (localStream) {
+          localStream.getAudioTracks().forEach(track => track.enabled = false);
+        }
+      }
+      if (micOn) {
+        this.style.background = '';
+      }
+    });
+
+    // Toggle camera
+    document.getElementById('toggle-camera-btn').addEventListener('click', function() {
+      cameraOn = !cameraOn;
+      const icon = this.querySelector('i');
+      const videoElement = document.getElementById('self-video');
+      const placeholder = document.getElementById('self-placeholder');
+      
+      if (cameraOn) {
+        icon.className = 'fa-solid fa-video';
+        this.style.opacity = '1';
+        this.title = 'Tắt camera';
+        if (localStream) {
+          localStream.getVideoTracks().forEach(track => track.enabled = true);
+          videoElement.style.display = 'block';
+          placeholder.style.display = 'none';
+        }
+      } else {
+        icon.className = 'fa-solid fa-video-slash';
+        this.style.opacity = '0.7';
+        this.style.background = 'rgba(220, 38, 38, 0.9)';
+        this.title = 'Bật camera';
+        if (localStream) {
+          localStream.getVideoTracks().forEach(track => track.enabled = false);
+        }
+        videoElement.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+      if (cameraOn) {
+        this.style.background = '';
+      }
+    });
+
+    // End call
+    document.getElementById('end-call-btn').addEventListener('click', () => {
+      // Play end call sound first
+      playEndCallSound();
+      
+      if (callTimer) {
+        clearInterval(callTimer);
+      }
+      // Stop webcam
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      // Stop audio context
+      if (audioContext) {
+        audioContext.close();
+      }
+      
+      // Wait for sound to play before redirecting
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      setTimeout(() => {
+        window.location.href = `chat.html?id=${sitterId}`;
+      }, 400);
+    });
+
+    // Initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadVideoCallData);
+    } else {
+      loadVideoCallData();
+    }
+  </script>
+</body>
+</html>

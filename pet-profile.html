@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hồ sơ thú cưng - PETTEL">
+  <title>Hồ sơ thú cưng | PETTEL</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <script src="data.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="pet-profile-header">
+    <a href="index.html" class="pet-profile-back">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </a>
+    <h1>Thú cưng của tôi</h1>
+  </header>
+
+  <!-- Main Content -->
+  <div class="pet-profile-page">
+    
+    <div class="pet-profile-intro">
+      <p>Tạo hồ sơ cho thú cưng của bạn. Thông tin sẽ tự động được gửi khi đặt lịch và dùng cho Smart Match.</p>
+    </div>
+
+    <button class="btn-add-pet" id="btn-add-pet">+ Thêm thú cưng</button>
+
+    <!-- Pet Cards Container -->
+    <div class="pet-cards-container" id="pet-cards-container">
+      <!-- Pet cards will be rendered here -->
+    </div>
+
+  </div>
+
+  <!-- Add/Edit Pet Modal -->
+  <div class="pet-modal" id="pet-modal" style="display: none;">
+    <div class="pet-modal-content">
+      <div class="pet-modal-header">
+        <h2 id="modal-title">Thêm thú cưng</h2>
+        <button class="pet-modal-close" id="modal-close">×</button>
+      </div>
+      
+      <form class="pet-form" id="pet-form">
+        <input type="hidden" id="pet-id">
+        
+        <div class="form-group">
+          <label for="pet-name">Tên thú cưng <span class="required">*</span></label>
+          <input type="text" id="pet-name" required placeholder="Ví dụ: Min">
+        </div>
+
+        <div class="form-group">
+          <label>Loài <span class="required">*</span></label>
+          <div class="form-radio-group">
+            <label class="form-radio">
+              <input type="radio" name="species" value="cat" required checked>
+              <span><i class="fa-solid fa-cat"></i> Mèo</span>
+            </label>
+            <label class="form-radio">
+              <input type="radio" name="species" value="dog" required>
+              <span><i class="fa-solid fa-dog"></i> Chó</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Giới tính <span class="required">*</span></label>
+          <div class="form-radio-group">
+            <label class="form-radio">
+              <input type="radio" name="sex" value="male" required checked>
+              <span>Đực</span>
+            </label>
+            <label class="form-radio">
+              <input type="radio" name="sex" value="female" required>
+              <span>Cái</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pet-age">Tuổi (năm) <span class="required">*</span></label>
+          <input type="number" id="pet-age" required min="0" max="30" step="0.5" placeholder="Ví dụ: 3">
+        </div>
+
+        <div class="form-group">
+          <label for="pet-diet">Chế độ ăn</label>
+          <textarea id="pet-diet" rows="2" placeholder="Ví dụ: 2× daily · No fish"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="pet-vaccination">Tình trạng tiêm chủng</label>
+          <input type="text" id="pet-vaccination" placeholder="Ví dụ: Up to date · Mar 2026">
+        </div>
+
+        <div class="form-group">
+          <label>Tính cách</label>
+          <div class="form-checkbox-group">
+            <label class="form-checkbox">
+              <input type="checkbox" name="personality" value="friendly">
+              <span>Thân thiện</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="personality" value="shy">
+              <span>Nhút nhát</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="personality" value="active">
+              <span>Năng động</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="personality" value="indoor-only">
+              <span>Chỉ ở trong nhà</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="personality" value="outdoor">
+              <span>Thích ở ngoài</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pet-special-note">Ghi chú đặc biệt</label>
+          <textarea id="pet-special-note" rows="3" placeholder="Ví dụ: Stress when meeting strangers — needs 30 min warm-up"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" id="btn-cancel">Hủy</button>
+          <button type="submit" class="btn-save">Lưu thẻ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let pets = [];
+    let editingPetId = null;
+
+    // Load pets from localStorage
+    function loadPets() {
+      const stored = localStorage.getItem('pettel_pets');
+      pets = stored ? JSON.parse(stored) : [];
+      renderPets();
+    }
+
+    // Save pets to localStorage
+    function savePets() {
+      localStorage.setItem('pettel_pets', JSON.stringify(pets));
+    }
+
+    // Render pet cards
+    function renderPets() {
+      const container = document.getElementById('pet-cards-container');
+      container.innerHTML = '';
+
+      if (pets.length === 0) {
+        container.innerHTML = '<div class="no-pets-message">Chưa có thú cưng nào. Hãy thêm thú cưng đầu tiên!</div>';
+        return;
+      }
+
+      pets.forEach(pet => {
+        const card = document.createElement('div');
+        card.className = 'pet-card';
+        
+        const personalityLabels = {
+          'friendly': 'Thân thiện',
+          'shy': 'Nhút nhát',
+          'active': 'Năng động',
+          'indoor-only': 'Chỉ ở trong nhà',
+          'outdoor': 'Thích ở ngoài'
+        };
+        
+        const personalityText = pet.personality.map(p => personalityLabels[p] || p).join(' · ');
+        const speciesIcon = pet.species === 'cat' ? '<i class="fa-solid fa-cat"></i>' : '<i class="fa-solid fa-dog"></i>';
+        const sexLabel = pet.sex === 'male' ? 'Đực' : 'Cái';
+        const speciesLabel = pet.species === 'cat' ? 'Mèo' : 'Chó';
+
+        card.innerHTML = `
+          <div class="pet-card-header">
+            <h3>${speciesIcon} ${pet.name}</h3>
+            <div class="pet-card-subtitle">Digital pet profile · Auto-shared</div>
+          </div>
+          <div class="pet-card-body">
+            <div class="pet-info-row">
+              <div class="pet-info-col">
+                <div class="pet-info-label">Species</div>
+                <div class="pet-info-value">${speciesLabel} · ${sexLabel} · ${pet.age} yrs</div>
+              </div>
+              <div class="pet-info-col">
+                <div class="pet-info-label">Diet</div>
+                <div class="pet-info-value">${pet.diet || 'Chưa cập nhật'}</div>
+              </div>
+            </div>
+            <div class="pet-info-row">
+              <div class="pet-info-col">
+                <div class="pet-info-label">Vaccination</div>
+                <div class="pet-info-value">${pet.vaccination || 'Chưa cập nhật'}</div>
+              </div>
+              <div class="pet-info-col">
+                <div class="pet-info-label">Personality</div>
+                <div class="pet-info-value">${personalityText || 'Chưa cập nhật'}</div>
+              </div>
+            </div>
+            ${pet.specialNote ? `
+            <div class="pet-special-note">
+              <div class="pet-info-label"><i class="fa-solid fa-exclamation-triangle"></i> Special Note</div>
+              <div class="pet-info-value">${pet.specialNote}</div>
+            </div>
+            ` : ''}
+          </div>
+          <div class="pet-card-actions">
+            <button class="pet-edit-btn" data-id="${pet.id}"><i class="fa-solid fa-edit"></i> Chỉnh sửa</button>
+            <button class="pet-delete-btn" data-id="${pet.id}"><i class="fa-solid fa-trash"></i> Xóa</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Add event listeners
+      document.querySelectorAll('.pet-edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => editPet(btn.dataset.id));
+      });
+
+      document.querySelectorAll('.pet-delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deletePet(btn.dataset.id));
+      });
+    }
+
+    // Show modal
+    function showModal(isEdit = false) {
+      const modal = document.getElementById('pet-modal');
+      const title = document.getElementById('modal-title');
+      title.textContent = isEdit ? 'Chỉnh sửa thú cưng' : 'Thêm thú cưng';
+      modal.style.display = 'flex';
+    }
+
+    // Hide modal
+    function hideModal() {
+      document.getElementById('pet-modal').style.display = 'none';
+      document.getElementById('pet-form').reset();
+      editingPetId = null;
+    }
+
+    // Add pet
+    function addPet(petData) {
+      const newPet = {
+        id: Date.now().toString(),
+        ...petData
+      };
+      pets.push(newPet);
+      savePets();
+      renderPets();
+    }
+
+    // Edit pet
+    function editPet(petId) {
+      const pet = pets.find(p => p.id === petId);
+      if (!pet) return;
+
+      editingPetId = petId;
+      
+      // Fill form
+      document.getElementById('pet-id').value = pet.id;
+      document.getElementById('pet-name').value = pet.name;
+      document.querySelector(`input[name="species"][value="${pet.species}"]`).checked = true;
+      document.querySelector(`input[name="sex"][value="${pet.sex}"]`).checked = true;
+      document.getElementById('pet-age').value = pet.age;
+      document.getElementById('pet-diet').value = pet.diet || '';
+      document.getElementById('pet-vaccination').value = pet.vaccination || '';
+      document.getElementById('pet-special-note').value = pet.specialNote || '';
+      
+      // Check personality
+      document.querySelectorAll('input[name="personality"]').forEach(cb => {
+        cb.checked = pet.personality.includes(cb.value);
+      });
+
+      showModal(true);
+    }
+
+    // Update pet
+    function updatePet(petId, petData) {
+      const index = pets.findIndex(p => p.id === petId);
+      if (index !== -1) {
+        pets[index] = { id: petId, ...petData };
+        savePets();
+        renderPets();
+      }
+    }
+
+    // Delete pet
+    function deletePet(petId) {
+      if (confirm('Bạn có chắc muốn xóa thú cưng này?')) {
+        pets = pets.filter(p => p.id !== petId);
+        savePets();
+        renderPets();
+      }
+    }
+
+    // Form submit
+    document.getElementById('pet-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const personality = Array.from(document.querySelectorAll('input[name="personality"]:checked')).map(cb => cb.value);
+      
+      const petData = {
+        name: document.getElementById('pet-name').value,
+        species: document.querySelector('input[name="species"]:checked').value,
+        sex: document.querySelector('input[name="sex"]:checked').value,
+        age: parseFloat(document.getElementById('pet-age').value),
+        diet: document.getElementById('pet-diet').value,
+        vaccination: document.getElementById('pet-vaccination').value,
+        personality: personality,
+        specialNote: document.getElementById('pet-special-note').value
+      };
+
+      if (editingPetId) {
+        updatePet(editingPetId, petData);
+      } else {
+        addPet(petData);
+      }
+
+      hideModal();
+    });
+
+    // Event listeners
+    document.getElementById('btn-add-pet').addEventListener('click', () => showModal(false));
+    document.getElementById('modal-close').addEventListener('click', hideModal);
+    document.getElementById('btn-cancel').addEventListener('click', hideModal);
+
+    // Close modal on outside click
+    document.getElementById('pet-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'pet-modal') {
+        hideModal();
+      }
+    });
+
+    // Initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadPets);
+    } else {
+      loadPets();
+    }
+  </script>
+</body>
+</html>

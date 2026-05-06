@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live Cam - PETTEL">
+  <title>Cam trực tiếp | PETTEL</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <script src="data.js"></script>
+</head>
+<body>
+
+  <div class="livecam-overlay">
+    <div class="livecam-container">
+      
+      <!-- Live badge -->
+      <div class="livecam-live-badge">
+        <span class="live-dot"></span> LIVE
+      </div>
+
+      <!-- Camera feed -->
+      <div class="livecam-feed">
+        <img src="images/hotel_interior.png" alt="Live camera feed" class="livecam-feed-image">
+      </div>
+
+      <!-- Info footer -->
+      <div class="livecam-info">
+        <div class="livecam-location" id="livecam-location">
+          <i class="fa-solid fa-map-marker-alt"></i> Phòng của Min & Mun · Cat Moon Hotel
+        </div>
+        <div class="livecam-timestamp" id="livecam-timestamp">
+          <i class="fa-solid fa-clock"></i> Cập nhật: vừa xong
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="livecam-controls">
+        <button class="livecam-control-btn" id="screenshot-btn">
+          <i class="fa-solid fa-camera"></i>
+          Chụp màn hình
+        </button>
+        <button class="livecam-close-btn" id="close-btn">
+          <i class="fa-solid fa-xmark"></i>
+          Đóng
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Load sitter data from URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    let updateInterval = null;
+
+    function loadLiveCamData() {
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      
+      if (typeof sittersData !== 'undefined') {
+        const sitter = sittersData.find(s => s.id === sitterId);
+        
+        if (sitter) {
+          document.getElementById('livecam-location').innerHTML = `<i class="fa-solid fa-map-marker-alt"></i> Phòng của thú cưng · ${sitter.name}`;
+          document.title = `Live Cam - ${sitter.name} | PETTEL`;
+        }
+      }
+
+      // Update timestamp every 30 seconds
+      updateTimestamp();
+      updateInterval = setInterval(updateTimestamp, 30000);
+    }
+
+    function updateTimestamp() {
+      const now = new Date();
+      const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+      document.getElementById('livecam-timestamp').innerHTML = `<i class="fa-solid fa-clock"></i> Cập nhật: vừa xong (${time})`;
+    }
+
+    // Screenshot button
+    document.getElementById('screenshot-btn').addEventListener('click', () => {
+      // Show toast notification
+      const toast = document.createElement('div');
+      toast.className = 'livecam-toast';
+      toast.innerHTML = '<i class="fa-solid fa-check-circle"></i> Đã lưu ảnh';
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 2000);
+    });
+
+    // Close button
+    document.getElementById('close-btn').addEventListener('click', () => {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+      const sitterId = parseInt(getQueryParam('id')) || 3;
+      window.location.href = `chat.html?id=${sitterId}`;
+    });
+
+    // Initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadLiveCamData);
+    } else {
+      loadLiveCamData();
+    }
+  </script>
+</body>
+</html>
