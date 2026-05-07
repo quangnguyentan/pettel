@@ -36,7 +36,10 @@
       
       <!-- Remote feed (sitter's camera) -->
       <div class="videocall-remote-feed">
-        <img src="images/hotel_interior.png" alt="Video feed" class="videocall-feed-image">
+        <video id="remote-video" class="videocall-feed-image" autoplay playsinline loop muted>
+          <source src="video-call.mp4" type="video/mp4">
+          Trình duyệt của bạn không hỗ trợ thẻ video.
+        </video>
         <div class="videocall-sitter-label" id="videocall-sitter-label">Cat Moon Hotel</div>
       </div>
 
@@ -159,6 +162,17 @@
       document.getElementById('videocall-calling').style.display = 'none';
       document.getElementById('videocall-container').style.display = 'block';
       
+      const remoteVideo = document.getElementById('remote-video');
+      if (remoteVideo) {
+        remoteVideo.muted = false;
+        const playPromise = remoteVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Remote video autoplay prevented:', error);
+          });
+        }
+      }
+
       // Start call timer
       callTimer = setInterval(() => {
         callSeconds++;
