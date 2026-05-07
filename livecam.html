@@ -22,7 +22,11 @@
 
       <!-- Camera feed -->
       <div class="livecam-feed">
-        <img src="images/hotel_interior.png" alt="Live camera feed" class="livecam-feed-image">
+        <video class="livecam-feed-video" id="live-video" data-test-id="duplo-hls-video" elementtiming="gestalt-video" playsinline="" poster="https://i.pinimg.com/236x/84/78/61/847861f6266c2f8dfaa1dadf5fec0b8c.jpg" preload="auto" autoplay>
+          <source src="7800090249519.mp4" type="video/mp4">
+          <track kind="captions">
+          Trình duyệt của bạn không hỗ trợ thẻ video.
+        </video>
       </div>
 
       <!-- Info footer -->
@@ -113,9 +117,25 @@
 
     // Initialize
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadLiveCamData);
+      document.addEventListener('DOMContentLoaded', () => {
+        loadLiveCamData();
+        setTimeout(() => {
+          const video = document.getElementById('live-video');
+          if (video) {
+            video.muted = false;
+            video.volume = 1;
+          }
+        }, 100);
+      });
     } else {
       loadLiveCamData();
+      setTimeout(() => {
+        const video = document.getElementById('live-video');
+        if (video) {
+          video.muted = false;
+          video.volume = 1;
+        }
+      }, 100);
     }
   </script>
 </body>
