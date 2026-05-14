@@ -141,11 +141,17 @@
           <!-- Review 1 -->
           <div class="review-card" id="review-1">
             <div class="review-card__header">
-              <div class="review-card__avatar">
-                <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;">K</div>
-              </div>
+              <a class="facebook-account-link" href="#" target="_blank" rel="noopener noreferrer">
+                <div class="review-card__avatar">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;">K</div>
+                </div>
+              </a>
               <div class="review-card__info">
-                <div class="name">Nguyễn Khánh Huy <span class="verified-review-tag"><i class="fa-solid fa-check-circle"></i> Đã hoàn thành booking</span></div>
+                <div class="name">
+                  Nguyễn Khánh Huy
+                  <span class="verified-review-tag"><i class="fa-solid fa-check-circle"></i> Đã hoàn thành booking</span>
+                  <span class="facebook-account-label">Tài khoản liên kết Facebook</span>
+                </div>
                 <div class="date">2 tháng trước</div>
               </div>
             </div>
@@ -155,16 +161,27 @@
               rất kỹ lưỡng. Mèo của tôi không hề sợ hãi, thay vào đó
               ngược lại rất thoải mái. Tôi rất hài lòng và sẽ quay lại!
             </div>
+            <div class="review-card__photo">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="facebook-photo-link">
+                <img src="" alt="Facebook user image">
+              </a>
+            </div>
           </div>
 
           <!-- Review 2 -->
           <div class="review-card" id="review-2">
             <div class="review-card__header">
-              <div class="review-card__avatar">
-                <div style="width:100%;height:100%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;">L</div>
-              </div>
+              <a class="facebook-account-link" href="#" target="_blank" rel="noopener noreferrer">
+                <div class="review-card__avatar">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;">L</div>
+                </div>
+              </a>
               <div class="review-card__info">
-                <div class="name">Linh Trần <span class="verified-review-tag"><i class="fa-solid fa-check-circle"></i> Đã hoàn thành booking</span></div>
+                <div class="name">
+                  Linh Trần
+                  <span class="verified-review-tag"><i class="fa-solid fa-check-circle"></i> Đã hoàn thành booking</span>
+                  <span class="facebook-account-label">Tài khoản liên kết Facebook</span>
+                </div>
                 <div class="date">8 tháng trước</div>
               </div>
             </div>
@@ -173,17 +190,28 @@
               chủ mà không thèm về luôn á, vẫn muốn ở lại nữa. Chắc là bé
               tình lắm, bảo sao tới đây cứ đòi được thả ra chơi hoài.
             </div>
+            <div class="review-card__photo">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="facebook-photo-link">
+                <img src="" alt="Facebook user image">
+              </a>
+            </div>
             <button class="review-card__show-more">Show more →</button>
           </div>
 
           <!-- Review 3 -->
           <div class="review-card" id="review-3">
             <div class="review-card__header">
-              <div class="review-card__avatar">
-                <div style="width:100%;height:100%;background:linear-gradient(135deg,#4facfe,#00f2fe);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;">T</div>
-              </div>
+              <a class="facebook-account-link" href="#" target="_blank" rel="noopener noreferrer">
+                <div class="review-card__avatar">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#4facfe,#00f2fe);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;">T</div>
+                </div>
+              </a>
               <div class="review-card__info">
-                <div class="name">Bùi Tuấn <span class="verified-review-tag"><i class="fa-solid fa-check-circle"></i> Đã hoàn thành booking</span></div>
+                <div class="name">
+                  Bùi Tuấn
+                  <span class="verified-review-tag"><i class="fa-solid fa-check-circle"></i> Đã hoàn thành booking</span>
+                  <span class="facebook-account-label">Tài khoản liên kết Facebook</span>
+                </div>
                 <div class="date">1 tháng trước</div>
               </div>
             </div>
@@ -192,6 +220,11 @@
               gia nhưng chuyên nghiệp nhất mà mình biết. Dịch vụ
               tốt, có chuyên môn nên không phải lo nhé. Cứ tin
               Tùng lo cho bạn hết rồi hihi.
+            </div>
+            <div class="review-card__photo">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="facebook-photo-link">
+                <img src="" alt="Facebook user image">
+              </a>
             </div>
           </div>
 
@@ -837,6 +870,69 @@
       }
     }
 
+    const facebookAccounts = [
+      { name: "Nguyễn Khánh Huy", image: "facebook/ảnh 1.png", link: "https://www.facebook.com/share/1QUyu8Nai7/?mibextid=wwXIfr" },
+      { name: "Linh Trần", image: "facebook/ảnh 2.png", link: "https://www.facebook.com/share/1BXt5VEgjR/?mibextid=wwXIfr" },
+      { name: "Bùi Tuấn", image: "facebook/ảnh 3.png", link: "https://www.facebook.com/share/1BHw3skLWh/?mibextid=wwXIfr" },
+      { name: "Minh Anh", image: "facebook/ảnh 4.jpg", link: "https://www.facebook.com/share/1J99riKwe3/?mibextid=wwXIfr" },
+      { name: "Hồng Nhung", image: "facebook/ảnh 5.jpg", link: "https://www.facebook.com/share/1J8vrmpS5R/?mibextid=wwXIfr" },
+      { name: "Hoàng Phúc", image: "facebook/ảnh 6.jpg", link: "https://www.facebook.com/share/1DhyrsdHLX/?mibextid=wwXIfr" },
+      { name: "Thuỳ Dương", image: "facebook/ảnh 7.jpg", link: "https://www.facebook.com/share/1CppRaNv9o/?mibextid=wwXIfr" },
+      { name: "Gia Hân", image: "facebook/ảnh 8.jpg", link: "https://www.facebook.com/share/1BfHQV6hgo/?mibextid=wwXIfr" },
+      { name: "Văn Đức", image: "facebook/ảnh 9.jpg", link: "https://www.facebook.com/share/1BMuFWaKgP/?mibextid=wwXIfr" },
+      { name: "Phương Thảo", image: "facebook/ảnh 10.jpg", link: "https://www.facebook.com/share/18TZgEuUc7/?mibextid=wwXIfr" },
+      { name: "Thanh Tùng", image: "facebook/ảnh 11.png", link: "https://www.facebook.com/share/1DwjWnPjdk/?mibextid=wwXIfr" },
+      { name: "Oanh Kiều", image: "facebook/ảnh 12.jpg", link: "https://www.facebook.com/share/18jS71P5f5/?mibextid=wwXIfr" },
+      { name: "Quang Vinh", image: "facebook/ảnh 13.jpg", link: "https://www.facebook.com/share/1YCDnv97gx/?mibextid=wwXIfr" },
+      { name: "Hải Yến", image: "facebook/ảnh 14.jpg", link: "https://www.facebook.com/share/1CMAW3Evkm/?mibextid=wwXIfr" },
+      { name: "Trúc Anh", image: "facebook/ảnh 15.jpg", link: "https://www.facebook.com/share/1BZgZejnHb/?mibextid=wwXIfr" },
+      { name: "Thị Ly", image: "facebook/ảnh 16.jpg", link: "https://www.facebook.com/share/1UrXDcrp49/?mibextid=wwXIfr" },
+      { name: "Bảo Ngọc", image: "facebook/ảnh 17.jpg", link: "https://www.facebook.com/share/1F9DmohZK3/?mibextid=wwXIfr" },
+      { name: "Anh Duy", image: "facebook/ảnh 18.jpg", link: "https://www.facebook.com/share/18aEosTLX6/?mibextid=wwXIfr" },
+      { name: "Hoài An", image: "facebook/ảnh 19.jpg", link: "https://www.facebook.com/share/1Cozp269ZJ/?mibextid=wwXIfr" },
+    ];
+
+    function resolveFacebookImagePath(path) {
+      return path.split('/').map(encodeURIComponent).join('/');
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function assignFacebookAccountsToReviews() {
+      const reviewIds = ['review-1', 'review-2', 'review-3'];
+      const shuffled = facebookAccounts
+        .map((account) => ({ account, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map((item) => item.account);
+      const selected = shuffled.slice(0, reviewIds.length);
+
+      reviewIds.forEach((reviewId, index) => {
+        const account = selected[index];
+        const review = document.getElementById(reviewId);
+        if (!review || !account) return;
+
+        const linkAnchor = review.querySelector('.facebook-account-link');
+        const photoAnchor = review.querySelector('.facebook-photo-link');
+        const photoImg = review.querySelector('.review-card__photo img');
+        const imageUrl = resolveFacebookImagePath(account.image);
+
+        if (linkAnchor) {
+          linkAnchor.href = account.link;
+          linkAnchor.setAttribute('aria-label', `Facebook ${account.name}`);
+        }
+        if (photoAnchor) {
+          photoAnchor.href = account.link;
+          photoAnchor.setAttribute('aria-label', `Facebook ${account.name}`);
+        }
+        if (photoImg) {
+          photoImg.src = imageUrl;
+          photoImg.alt = account.name;
+        }
+      });
+    }
+
     // ===== Event Listeners =====
     document.addEventListener('DOMContentLoaded', () => {
       // Initialize user profile
@@ -884,6 +980,7 @@
       
       // Load sitter details
       loadSitterDetails();
+      assignFacebookAccountsToReviews();
     });
   </script>
 </body>

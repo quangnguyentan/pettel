@@ -1289,6 +1289,61 @@ button {
   object-fit: cover;
 }
 
+.review-card__photo {
+  margin-top: 14px;
+  width: 100%;
+  max-width: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.review-card__photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.facebook-review-link {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #1877f2;
+  color: white;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.facebook-review-link:hover {
+  background: #145db2;
+}
+
+.facebook-review-link i {
+  font-size: 16px;
+}
+
+.facebook-account-link {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.facebook-account-link:hover .review-card__avatar {
+  box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.18);
+}
+
+.facebook-account-label {
+  display: block;
+  margin-top: 6px;
+  color: #1877f2;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 .review-card__info .name {
   font-size: 15px;
   font-weight: 600;
@@ -1304,6 +1359,29 @@ button {
   font-size: 14px;
   line-height: 1.6;
   color: var(--color-text);
+}
+
+.facebook-review-summary {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.facebook-review-summary .reviews-summary-text {
+  font-size: 14px;
+  color: var(--color-text-light);
+}
+
+.facebook-review-link {
+  margin-left: auto;
+  color: #1877f2;
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.facebook-review-link:hover {
+  color: #145db2;
 }
 
 .review-card__show-more {

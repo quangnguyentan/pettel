@@ -986,6 +986,176 @@ function performSearch(query) {
   applyFilters();
 }
 
+const facebookAccounts = [
+  {
+    name: "Nguyễn Khánh Huy",
+    image: "facebook/ảnh 1.png",
+    link: "https://www.facebook.com/share/1QUyu8Nai7/?mibextid=wwXIfr",
+  },
+  {
+    name: "Linh Trần",
+    image: "facebook/ảnh 2.png",
+    link: "https://www.facebook.com/share/1BXt5VEgjR/?mibextid=wwXIfr",
+  },
+  {
+    name: "Bùi Tuấn",
+    image: "facebook/ảnh 3.png",
+    link: "https://www.facebook.com/share/1BHw3skLWh/?mibextid=wwXIfr",
+  },
+  {
+    name: "Minh Anh",
+    image: "facebook/ảnh 4.jpg",
+    link: "https://www.facebook.com/share/1J99riKwe3/?mibextid=wwXIfr",
+  },
+  {
+    name: "Hồng Nhung",
+    image: "facebook/ảnh 5.jpg",
+    link: "https://www.facebook.com/share/1J8vrmpS5R/?mibextid=wwXIfr",
+  },
+  {
+    name: "Hoàng Phúc",
+    image: "facebook/ảnh 6.jpg",
+    link: "https://www.facebook.com/share/1DhyrsdHLX/?mibextid=wwXIfr",
+  },
+  {
+    name: "Thuỳ Dương",
+    image: "facebook/ảnh 7.jpg",
+    link: "https://www.facebook.com/share/1CppRaNv9o/?mibextid=wwXIfr",
+  },
+  {
+    name: "Gia Hân",
+    image: "facebook/ảnh 8.jpg",
+    link: "https://www.facebook.com/share/1BfHQV6hgo/?mibextid=wwXIfr",
+  },
+  {
+    name: "Văn Đức",
+    image: "facebook/ảnh 9.jpg",
+    link: "https://www.facebook.com/share/1BMuFWaKgP/?mibextid=wwXIfr",
+  },
+  {
+    name: "Phương Thảo",
+    image: "facebook/ảnh 10.jpg",
+    link: "https://www.facebook.com/share/18TZgEuUc7/?mibextid=wwXIfr",
+  },
+  {
+    name: "Thanh Tùng",
+    image: "facebook/ảnh 11.png",
+    link: "https://www.facebook.com/share/1DwjWnPjdk/?mibextid=wwXIfr",
+  },
+  {
+    name: "Oanh Kiều",
+    image: "facebook/ảnh 12.jpg",
+    link: "https://www.facebook.com/share/18jS71P5f5/?mibextid=wwXIfr",
+  },
+  {
+    name: "Quang Vinh",
+    image: "facebook/ảnh 13.jpg",
+    link: "https://www.facebook.com/share/1YCDnv97gx/?mibextid=wwXIfr",
+  },
+  {
+    name: "Hải Yến",
+    image: "facebook/ảnh 14.jpg",
+    link: "https://www.facebook.com/share/1CMAW3Evkm/?mibextid=wwXIfr",
+  },
+  {
+    name: "Trúc Anh",
+    image: "facebook/ảnh 15.jpg",
+    link: "https://www.facebook.com/share/1BZgZejnHb/?mibextid=wwXIfr",
+  },
+  {
+    name: "Thị Ly",
+    image: "facebook/ảnh 16.jpg",
+    link: "https://www.facebook.com/share/1UrXDcrp49/?mibextid=wwXIfr",
+  },
+  {
+    name: "Bảo Ngọc",
+    image: "facebook/ảnh 17.jpg",
+    link: "https://www.facebook.com/share/1F9DmohZK3/?mibextid=wwXIfr",
+  },
+  {
+    name: "Anh Duy",
+    image: "facebook/ảnh 18.jpg",
+    link: "https://www.facebook.com/share/18aEosTLX6/?mibextid=wwXIfr",
+  },
+  {
+    name: "Hoài An",
+    image: "facebook/ảnh 19.jpg",
+    link: "https://www.facebook.com/share/1Cozp269ZJ/?mibextid=wwXIfr",
+  },
+];
+
+function resolveFacebookImagePath(path) {
+  return path.split("/").map(encodeURIComponent).join("/");
+}
+
+const facebookReviewTexts = [
+  "Chủ nhà chăm sóc rất kỹ, pet của mình về nhà thơm tho và dễ chịu.",
+  "Đã hoàn thành booking, dịch vụ chuyên nghiệp và làm đúng hẹn.",
+  "Mẹo được cắt gọn gàng, tắm sạch, mình rất yên tâm.",
+  "Review thật, facebook link hoạt động, mình sẽ quay lại lần sau.",
+  "Gửi thú cưng ở đây rất an tâm, nhân viên thân thiện và chịu lắng nghe.",
+  "Dịch vụ tắm spa tận tâm, thú cưng không hề sợ và được chăm sóc kỹ lưỡng.",
+  "Mình rất hài lòng, mỗi lần booking pet đều được đối xử như ở nhà.",
+  "Chủ nhà dễ thương, dịch vụ tốt, mình sẽ giới thiệu cho bạn bè.",
+];
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomCommentText() {
+  return facebookReviewTexts[getRandomInt(0, facebookReviewTexts.length - 1)];
+}
+
+function setupFacebookReviews() {
+  const container = document.getElementById("facebook-comments-container");
+  if (!container) return;
+
+  container.innerHTML = "";
+  let totalComments = 0;
+
+  facebookAccounts.forEach((account) => {
+    const commentCount = getRandomInt(2, 3);
+    const imageUrl = resolveFacebookImagePath(account.image);
+    for (let i = 0; i < commentCount; i += 1) {
+      const reviewCard = document.createElement("div");
+      reviewCard.className = "review-card";
+      reviewCard.innerHTML = `
+          <div class="review-card__header">
+            <a class="review-card__avatar-link" href="${account.link}" target="_blank" rel="noopener noreferrer" aria-label="Facebook ${account.name}">
+              <div class="review-card__avatar">
+                <img src="${imageUrl}" alt="${account.name}">
+              </div>
+            </a>
+            <div class="review-card__info">
+              <div class="name">${account.name}</div>
+              <div class="date">Đã hoàn thành booking</div>
+            </div>
+            <a class="facebook-review-link" href="${account.link}" target="_blank" rel="noopener noreferrer" aria-label="Facebook ${account.name}">
+              <i class="fa-brands fa-facebook-square"></i>
+              Xem Facebook
+            </a>
+          </div>
+          <div class="review-card__content">${getRandomCommentText()}</div>
+          <div class="review-card__photo">
+            <a href="${account.link}" target="_blank" rel="noopener noreferrer" aria-label="Facebook ${account.name}">
+              <img src="${imageUrl}" alt="${account.name}">
+            </a>
+          </div>
+        `;
+      container.appendChild(reviewCard);
+      totalComments += 1;
+    }
+  });
+
+  const summaryText = document.querySelector(
+    ".facebook-review-summary .reviews-summary-text",
+  );
+  if (summaryText) {
+    summaryText.textContent = `${facebookAccounts.length} tài khoản liên kết Facebook • ${totalComments} bình luận`;
+  }
+}
+
 function init() {
   try {
     // Check if sittersData is available (from data.js)
